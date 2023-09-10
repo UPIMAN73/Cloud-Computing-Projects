@@ -14,35 +14,12 @@ import (
 	"time"
 )
 
-// Find the average of a float64 list
-func Average(list []float64) float64 {
-	var output float64
-	for i := 0; i < len(list); i++ {
-		output += list[i]
-	}
-	return output / float64(len(list))
-}
-
-// Find the median of a float64 list
-func Median(list []float64) float64 {
-	var median float64
-	listLength := len(list)
-	if listLength == 0 {
-		return 0
-	} else if listLength%2 == 0 {
-		median = (list[listLength/2-1] + list[listLength/2]) / 2
-	} else {
-		median = list[listLength/2]
-	}
-	return median
-}
-
 // Ping role as a socket client
 func RunPingSocket(config Config) {
 	// Stats definition
 	var rtt RTT
 	rtt_list := make([]time.Duration, 0)
-	rtt_int_list := make([]float64, RUN_EXECUTIONS)
+	rtt_float_list := make([]float64, RUN_EXECUTIONS)
 
 	// Establish a connection
 	address := config.Host + ":" + config.Ports.Socket
@@ -81,9 +58,9 @@ func RunPingSocket(config Config) {
 
 	// Sort the data
 	for i := 0; i < RUN_EXECUTIONS; i++ {
-		rtt_int_list[i] = float64(rtt_list[i].Microseconds())
+		rtt_float_list[i] = float64(rtt_list[i].Microseconds())
 	}
-	sort.Float64s(rtt_int_list)
+	sort.Float64s(rtt_float_list)
 
 	// Write RTT list to a file
 	fmt.Println("Writing RTT stats to file: 'rtt_socket_output_stats.txt'")
@@ -92,11 +69,11 @@ func RunPingSocket(config Config) {
 
 	// Write Average
 	f.WriteString("Average: ")
-	f.WriteString(fmt.Sprintf("%f\n", Average(rtt_int_list)))
+	f.WriteString(fmt.Sprintf("%f\n", Average(rtt_float_list)))
 
 	// Write Median
 	f.WriteString("Median: ")
-	f.WriteString(fmt.Sprintf("%f\n", Median(rtt_int_list)))
+	f.WriteString(fmt.Sprintf("%f\n", Median(rtt_float_list)))
 
 	// Write 99th
 	f.WriteString("99th: ")
