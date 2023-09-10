@@ -1,3 +1,9 @@
+/**
+ * @file calc.go
+ * @author Joshua Calzadillas (jmc1241@usnh.edu)
+ * @brief Project 0 - Ping Pong Project
+ * @date 2023-09-10
+ */
 package main
 
 // Find the average of a float64 list
