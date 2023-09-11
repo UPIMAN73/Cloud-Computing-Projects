@@ -49,8 +49,7 @@ func ZeroNinePercentile(list []float64) float64 {
 
 	// Find the 99% of the given list
 	if len(list) > 0 {
-		itemValue := math.Round(float64(len(list)) * 0.99)
-		return list[int(itemValue)]
+		return list[int(math.Round(float64(len(list))*0.99))]
 	} else {
 		return 0.0
 	}
@@ -65,8 +64,7 @@ func OneNinePercentile(list []float64) float64 {
 
 	// Find the 99% of the given list
 	if len(list) > 0 {
-		itemValue := math.Round(float64(len(list)) * 0.999)
-		return list[int(itemValue)]
+		return list[int(math.Round(float64(len(list))*0.999))]
 	} else {
 		return 0.0
 	}
