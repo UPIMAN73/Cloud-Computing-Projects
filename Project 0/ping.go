@@ -14,11 +14,6 @@ import (
 	"time"
 )
 
-// Ping role as a RPC client
-func RunPingRPC(config Config) {
-	//
-}
-
 // Ping role as a socket client
 func RunPingSocket(config Config) {
 	// Stats definition

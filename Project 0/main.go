@@ -57,12 +57,10 @@ func main() {
 	// Define command-line flags
 	var displayHelp bool
 	var role string
-	var connectionType string
 	var configFile string
 
 	// Assign flags to variable types
 	flag.StringVar(&role, "r", "", "Specifies the role to perform. Options: \"ping\" or \"pong\".")
-	flag.StringVar(&connectionType, "t", "socket", "Specifies the connection type. Options: \"rpc\", \"socket\", or \"both\".")
 	flag.StringVar(&configFile, "f", "config.yaml", "Specifies the config file.     Options: \"config-file\".")
 	flag.BoolVar(&displayHelp, "h", false, "Prints out the help screen.")
 
@@ -70,19 +68,13 @@ func main() {
 	flag.Parse()
 
 	// Flag control flow
-	if displayHelp || role == "" || connectionType == "" || configFile == "" {
-		// If 'help' flag is set or role/connectionType is not specified, display the usage information.
+	if displayHelp || role == "" || configFile == "" {
+		// If 'help' flag is set or role/config file is not specified, display the usage information.
 		fmt.Println(DefaultString())
 		return
 	} else {
 		// Making sure the arguments correlate to the specified values
 		if role != "ping" && role != "pong" {
-			fmt.Println(DefaultString())
-			return
-		}
-
-		// Making sure the arguments correlate to the specified values
-		if connectionType != "rpc" && connectionType != "socket" && connectionType != "both" {
 			fmt.Println(DefaultString())
 			return
 		}
@@ -96,21 +88,9 @@ func main() {
 		// Deciding role
 		switch role {
 		case "ping":
-			if connectionType == "socket" {
-				RunPingSocket(config)
-			} else if connectionType == "rpc" {
-				RunPingSocket(config) // Change to RPC later on
-			} else {
-				RunPingSocket(config) // add RPC later on
-			}
+			RunPingSocket(config)
 		case "pong":
-			if connectionType == "socket" {
-				RunPongSocket(config)
-			} else if connectionType == "rpc" {
-				RunPongSocket(config) // Change to RPC later on
-			} else {
-				RunPongSocket(config) // add RPC later on
-			}
+			RunPongSocket(config)
 		}
 	}
 }
@@ -128,12 +108,11 @@ func DefaultString() string {
 	output += "\t-h, --help         Show this help message and exit.\n\n"
 	output += "Arguments:\n"
 	output += "\t-r role               Specifies the role to perform. Options: \"ping\" or \"pong\".\n"
-	output += "\t-t connection-type    Specifies the connection type. Options: \"rpc\", \"socket\", or \"both\".\n"
 	output += "\t-f config-file        Specifies the config file.     Options: \"config-file\".\n\n"
 	output += "Examples:\n"
-	output += "\tpingpong -r ping -t rpc -f \"~/config.yaml\"               Performs the \"ping\" role using \"RPC\" as the connection type.\n"
-	output += "\tpingpong -r pong -t socket -f \"../config.yaml\"           Performs the \"pong\" role using \"socket\" as the connection type.\n"
-	output += "\tpingpong -r ping -t both -f \"config.yaml\"                Performs the \"ping\" role using both \"RPC\" and \"socket\" as the connection type.\n\n"
+	output += "\tpingpong -r ping -f \"~/config.yaml\"               Performs the \"ping\" role using a different path for the config.yaml.\n"
+	output += "\tpingpong -r pong -f \"../config.yaml\"           Performs the \"pong\" role using a different path for the config.yaml.\n"
+	output += "\tpingpong -r ping -f \"config.yaml\"                Performs the \"ping\" role a local path for the config.yaml.\n\n"
 	output += "For more information, pingpong -h\n"
 	return output
 }

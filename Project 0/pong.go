@@ -11,11 +11,6 @@ import (
 	"net"
 )
 
-// Pong role as a gRPC server
-func RunPongRPC(config Config) {
-	//
-}
-
 // Pong role as a socket server
 func RunPongSocket(config Config) {
 	// Address
