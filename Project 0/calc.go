@@ -6,6 +6,11 @@
  */
 package main
 
+import (
+	"math"
+	"sort"
+)
+
 // Find the average of a float64 list
 func Average(list []float64) float64 {
 	var output float64
@@ -17,14 +22,52 @@ func Average(list []float64) float64 {
 
 // Find the median of a float64 list
 func Median(list []float64) float64 {
-	var median float64
+	// Autosort if it has not already been sorted
+	if !sort.Float64sAreSorted(list) {
+		sort.Float64s(list)
+	}
+
+	// Definitions
 	listLength := len(list)
+
+	// Median calculation
 	if listLength == 0 {
 		return 0
 	} else if listLength%2 == 0 {
-		median = (list[listLength/2-1] + list[listLength/2]) / 2
+		return (list[listLength/2-1] + list[listLength/2]) / 2
 	} else {
-		median = list[listLength/2]
+		return list[listLength/2]
 	}
-	return median
+}
+
+// This function allows us to find the 99% percentile calculation used to determine performance
+func ZeroNinePercentile(list []float64) float64 {
+	// Autosort if it has not already been sorted
+	if !sort.Float64sAreSorted(list) && len(list) > 0 {
+		sort.Float64s(list)
+	}
+
+	// Find the 99% of the given list
+	if len(list) > 0 {
+		itemValue := math.Round(float64(len(list)) * 0.99)
+		return list[int(itemValue)]
+	} else {
+		return 0.0
+	}
+}
+
+// This function allows us to find the 99% percentile calculation used to determine performance
+func OneNinePercentile(list []float64) float64 {
+	// Autosort if it has not already been sorted
+	if !sort.Float64sAreSorted(list) && len(list) > 0 {
+		sort.Float64s(list)
+	}
+
+	// Find the 99% of the given list
+	if len(list) > 0 {
+		itemValue := math.Round(float64(len(list)) * 0.999)
+		return list[int(itemValue)]
+	} else {
+		return 0.0
+	}
 }
