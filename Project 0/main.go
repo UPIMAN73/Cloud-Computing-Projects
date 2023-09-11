@@ -47,6 +47,7 @@ func ConvertDurationToBytes(list []time.Duration) string {
 	}
 }
 
+// Constants that are important for the ping and pong sections
 const (
 	RUN_EXECUTIONS = 10000
 )
