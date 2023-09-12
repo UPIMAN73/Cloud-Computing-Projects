@@ -14,7 +14,7 @@ import (
 // Pong role as a socket server
 func RunPongSocket(config Config) {
 	// Address
-	address := config.Host + ":" + config.Ports.Socket
+	address := ":" + config.Ports.Socket
 
 	// Start pong server
 	fmt.Println("Pong role begin...")
