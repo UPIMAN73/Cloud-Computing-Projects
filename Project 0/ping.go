@@ -82,6 +82,8 @@ func RunPingSocket(config Config) {
 	// Write 99.9%
 	f.WriteString("99.9th-Percentile: ")
 	f.WriteString(fmt.Sprintf("%f\n", OneNinePercentile(rtt_float_list)))
+
+	// Close file stream
 	f.Close()
 
 	// Write list to file
