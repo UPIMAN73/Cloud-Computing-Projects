@@ -37,6 +37,8 @@ Quick Fixes:
    - To run the install script: `./install.sh` or `sh install.sh`
 
 4. If you do not have snap try installing golang through the `apt` install environment or building from the source.
+5. If you cannot bind to a port (as pong role) or have the connection established (as a ping role) try running the program as `sudo` or as `root`.
+   - Run program as sudo: `sudo go run main -r <ping or pong>`
 
 #### Config File
 
@@ -79,12 +81,12 @@ Before running the command, you need to edit the `config.yaml` file to properly 
 
 ```sh
 # If you want to run the client through the go environment
-sudo go run main -r ping
+go run main -r ping
 ```
 
 ```sh
 # If you want to run the client through a built environment
 go build main
 mv main pingpong
-sudo ./pingpong -r ping
+./pingpong -r ping
 ```
