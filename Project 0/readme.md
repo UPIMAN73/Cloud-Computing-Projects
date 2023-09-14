@@ -61,14 +61,14 @@ Pong role is just a server role that waits until a ping host pings the pong host
 
 ```sh
 # If you want to run the server through the go environment
-go run main -r pong
+sudo go run main -r pong
 ```
 
 ```sh
 # If you want to run the server through a built environment
 go build main
 mv main pingpong
-./pingpong -r pong
+sudo ./pingpong -r pong
 ```
 
 #### Ping Role (Client)
@@ -79,12 +79,12 @@ Before running the command, you need to edit the `config.yaml` file to properly 
 
 ```sh
 # If you want to run the client through the go environment
-go run main -r ping
+sudo go run main -r ping
 ```
 
 ```sh
 # If you want to run the client through a built environment
 go build main
 mv main pingpong
-./pingpong -r ping
+sudo ./pingpong -r ping
 ```
