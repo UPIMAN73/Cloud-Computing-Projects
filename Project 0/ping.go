@@ -75,8 +75,15 @@ func RunPingSocket(config Config) {
 	f.WriteString("Median: ")
 	f.WriteString(fmt.Sprintf("%f\n", Median(rtt_float_list)))
 
-	// Write 99th
-	f.WriteString("99th: ")
+	// Write 99%
+	f.WriteString("99th-Percentile: ")
+	f.WriteString(fmt.Sprintf("%f\n", ZeroNinePercentile(rtt_float_list)))
+
+	// Write 99.9%
+	f.WriteString("99.9th-Percentile: ")
+	f.WriteString(fmt.Sprintf("%f\n", OneNinePercentile(rtt_float_list)))
+
+	// Close file stream
 	f.Close()
 
 	// Write list to file

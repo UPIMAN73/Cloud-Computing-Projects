@@ -23,4 +23,7 @@ go.work
 go.mod
 go.sum
 
+# Project 0
+rtt_socket_output_stats.txt
+rtt_socket_output_file.txt
 gRPC/
