@@ -1,0 +1,8 @@
+---
+Host:
+  - ""
+  - ""
+  - ""
+Ports:
+  # KV Storage Service port
+  Socket: "9988"
