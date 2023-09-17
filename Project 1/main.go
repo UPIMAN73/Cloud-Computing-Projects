@@ -11,12 +11,9 @@ import (
 	"fmt"
 )
 
-// Constants that are important for the ping and pong sections
-const (
-	RUN_EXECUTIONS = 1
-)
-
+// Main system function
 func main() {
+	// Flag declarations
 	var configFile string    // <Config-File-Name>.yaml
 	var displayHelp bool     // 1 = help, 0 = no help prompt
 	var executionType string // ls = leadership, ll = leaderless
