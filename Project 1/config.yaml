@@ -1,8 +1,6 @@
 ---
-Host:
-  - ""
-  - ""
-  - ""
+Hosts:
+  - "localhost"
 Ports:
   # KV Storage Service port
   Socket: "9988"

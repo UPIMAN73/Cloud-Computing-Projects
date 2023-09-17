@@ -1,7 +1,7 @@
 /**
  * @file config.go
  * @author Joshua Calzadillas (jmc1241@usnh.edu)
- * @brief Project 0 - Ping Pong Project
+ * @brief Project 1 - KVStore
  * @date 2023-09-10
  */
 package main
@@ -20,8 +20,8 @@ type Ports_t struct {
 
 // Config used to determine the structure of the system
 type Config struct {
-	Host  string  `yaml:"Host"`
-	Ports Ports_t `yaml:"Ports"`
+	Hosts []string `yaml:"Hosts"`
+	Ports Ports_t  `yaml:"Ports"`
 }
 
 // Load items from the config file into an config object
