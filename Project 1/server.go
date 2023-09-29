@@ -13,6 +13,10 @@ import (
 
 // Pong role as a socket server
 func RunServerSocket(config Config) {
+	// Initilize the database
+	// var db map[string]string
+	// db = make(map[string]string)
+
 	// Environment definitions
 	buffer := make([]byte, 128) // Message buffer for the ping pong messages to be read
 	address := ":" + config.Ports.Socket

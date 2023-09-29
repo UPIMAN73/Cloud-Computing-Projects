@@ -46,7 +46,7 @@ func LeaderlessClientSocket(config Config) {
 			_, err := connection.Write([]byte("Put(A, Hello World!)"))
 			CheckError(err)
 
-			// read buffer
+			// read ACK
 			messageLength, err := connection.Read(buffer)
 			CheckError(err)
 

@@ -23,26 +23,22 @@ func main() {
 	flag.StringVar(&configFile, "f", "config.yaml", "Specifies the config file.     Options: \"config-file-name.yaml\".\n")
 	flag.StringVar(&role, "r", "s", "Specifies the config file.     Options: \"config-file-name.yaml\".\n")
 	flag.StringVar(&executionType, "t", "ll", "Specifies the data-replication type.     Options: leaderless (ll), leadership (ls).\n")
-	flag.BoolVar(&displayHelp, "h", false, "Prints out the help screen.")
+	flag.BoolVar(&displayHelp, "h", true, "Prints out the help screen.")
 
 	// Parse command-line flags
 	flag.Parse()
 
 	// Flag control flow
 	if displayHelp || configFile == "" || role == "" {
-		// If 'help' flag is set or role/config file is not specified, display the usage information.
-		fmt.Println(DefaultString())
+		PrintCommandHelp()
 		return
+
 	} else {
 		// Definitions
 		var config Config
-		// var db map[string]string
 
 		// Loading config file
 		LoadConfig(configFile, &config)
-
-		// Initilize the database
-		// db = make(map[string]string)
 
 		// Run test
 		if role == "s" {
@@ -73,7 +69,10 @@ func DefaultString() string {
 	return output
 }
 
+// Print Command Help
 func PrintCommandHelp() {
+	// If 'help' flag is set or role/config file is not specified, display the usage information.
+	fmt.Println("Command kvstore [Args] [Options]")
 	flag.PrintDefaults()
 	fmt.Println(DefaultString())
 }
