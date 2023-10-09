@@ -102,7 +102,7 @@ func DBQueueRun(Items int) []DBRunStatus {
 	// Iterativly run items
 	for i := 0; i < Items; i++ {
 		results[i] = DBRun(dbQueue.History[0])
-		if results[i].ResponseCode == DBERR || results[i].ResponseCode == DBERR {
+		if results[i].ResponseCode == DBERR || results[i].ResponseCode == DBNOP {
 			break
 		} else {
 			DBDenqueue()
