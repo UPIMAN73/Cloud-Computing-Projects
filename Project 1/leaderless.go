@@ -13,6 +13,7 @@ import (
 
 // Leaderless Client Socket Function
 func LeaderlessClientSocket(config Config) {
+	// TODO Quarom
 	// Establish a connection
 	connections := make(map[string]net.Conn, len(config.Hosts))
 
@@ -46,7 +47,7 @@ func LeaderlessClientSocket(config Config) {
 			_, err := connection.Write([]byte("Put(A, Hello World!)"))
 			CheckError(err)
 
-			// read ACK
+			// read buffer
 			messageLength, err := connection.Read(buffer)
 			CheckError(err)
 

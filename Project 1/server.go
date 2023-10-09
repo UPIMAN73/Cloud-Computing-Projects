@@ -13,21 +13,17 @@ import (
 
 // Pong role as a socket server
 func RunServerSocket(config Config) {
-	// Initilize the database
-	// var db map[string]string
-	// db = make(map[string]string)
-
 	// Environment definitions
-	buffer := make([]byte, 128) // Message buffer for the ping pong messages to be read
+	buffer := make([]byte, 128) // Message buffer
 	address := ":" + config.Ports.Socket
 
-	// Start pong server
+	// Start Server
 	fmt.Println("Server role begin...")
 	server, err := net.Listen("tcp", address)
 	CheckError(err)
 	defer server.Close()
 
-	// Describe the server being associated with the pong role
+	// Server Host Parameters
 	fmt.Printf("Server Role:\n\tPort: %s\n", address)
 
 	// Server Loop
@@ -39,7 +35,6 @@ func RunServerSocket(config Config) {
 
 		// BIG TODO
 		// DB Implementation
-		// Client isn't working (continuosly) because we need to have this hosting on different hosts (or we need to thread it)
 
 		// Read the message from client
 		messageLength, err := connection.Read(buffer)
@@ -48,7 +43,8 @@ func RunServerSocket(config Config) {
 		fmt.Println(string(buffer[:messageLength]))
 
 		// Sending message
-		_, err = connection.Write(buffer[:messageLength])
+		messageOut := []byte(UICMDStrip(string(buffer[:messageLength])))
+		_, err = connection.Write(messageOut)
 
 		// We don't use check error for this because we need to close the socket, then panic
 		if err != nil {

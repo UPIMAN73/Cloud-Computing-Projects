@@ -13,6 +13,7 @@ import (
 
 // Leadership Client Socket Function
 func LeadershipClientSocket(config Config) {
+	// TODO FIND HOST
 	// Establish a connection
 	connections := make(map[string]net.Conn, len(config.Hosts))
 
