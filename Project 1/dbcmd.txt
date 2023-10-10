@@ -1,0 +1,6 @@
+put(A, Hello World!)
+get(A)
+put(A, Hi Josh!)
+get(A)
+delete(A)
+get(A)

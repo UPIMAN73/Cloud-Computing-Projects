@@ -11,13 +11,8 @@ import (
 	"net"
 )
 
-const (
-	Quarom = 3 // 3 out of 5 servers must produce the same value otherwise we must restart the process
-)
-
 // Leaderless Client Socket Function
-func LeaderlessClientSocket(config Config) {
-	// TODO Quarom
+func LeaderlessClientSocket(config Config, commandList []string) {
 	// Establish a connection
 	connections := make(map[string]net.Conn, len(config.Hosts))
 
@@ -40,32 +35,52 @@ func LeaderlessClientSocket(config Config) {
 				continue
 			}
 		}
+
+		// Establish connection to conenction map
 		connections[config.Hosts[i]] = connection
 	}
 
+	// Command List
+	commandIndex := 0 // Used for inferencing the commands associated with a file list
+
+	// Quarom definitions
+	responseList := make(map[string]Response, 0)
+	clientTrigger := false
+	var err error
+
 	// Client Loop
 	buffer := make([]byte, 128)
-	for clientTrigger := false; !clientTrigger; {
+	for commandIndex < len(commandList) {
 		for hostID, connection := range connections {
+			if clientTrigger {
+				fmt.Println("A write error occured to the socket stream, please check to make sure something did not happen to the client.")
+				defer CheckError(err)
+				errc := connection.Close()
+				CheckError(errc)
+				clientTrigger = false
+			}
 			// send value
-			_, err := connection.Write([]byte(""))
+			_, err := connection.Write([]byte(commandList[commandIndex]))
 			CheckError(err)
 
 			// read buffer
 			messageLength, err := connection.Read(buffer)
 			CheckError(err)
 
-			fmt.Printf("\tHost: %s\n\tMessage: %s\n", hostID, string(buffer[:messageLength]))
+			// Add response to the response list
+			responseList[hostID] = UIResponseStrip(string(buffer[:messageLength]))
+			// fmt.Printf("\tHost: %s\n\tMessage: %s\n", hostID, responseList[hostID])
 
 			// We don't use check error for this because we need to close the socket, then panic
 			if err != nil {
-				fmt.Println("A write error occured to the socket stream, please check to make sure something did not happen to the client.")
-				defer CheckError(err)
-				errc := connection.Close()
-				CheckError(errc)
 				clientTrigger = true
 			}
-			clientTrigger = true
 		}
+		commandIndex += QuoromCheck(responseList, commandList[commandIndex])
+	}
+	for hostID, connection := range connections {
+		fmt.Printf("Closing connection for Host: %s\r\n", hostID)
+		errc := connection.Close()
+		CheckError(errc)
 	}
 }

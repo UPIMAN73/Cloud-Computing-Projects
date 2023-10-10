@@ -32,9 +32,9 @@ type DBRC int
 
 // Operation Response Codes
 const (
-	DBNOP DBRC = 0 // DB No Run
-	DBACK      = 1 // DB Ack
-	DBERR      = 2 // DB Error
+	DBNOP DBRC = iota // DB No Run
+	DBACK      = 1    // DB Ack
+	DBERR      = 2    // DB Error
 )
 
 // Database Command used to determine
@@ -155,7 +155,7 @@ func DBRun(DBC DBCommand) DBRunStatus {
 
 // DB Get item based on key
 func DBGet(Key string) string {
-	return Key + ", " + globalDB[Key]
+	return Key + "," + globalDB[Key]
 }
 
 // DB Set Item based on key and value
@@ -173,30 +173,22 @@ func DBDelete(Key string) {
 	}
 }
 
-// Database test
-func DBTest() {
+// Converts a string into a DB Operation Command Value (Identifiable value)
+func DBCMDtoDBOC(cmd string) DBOC {
+	switch cmd {
+	// Read
+	case "get":
+		return Read
 
-	// Adding items to DB Queue
-	fmt.Println(UICMDStrip("put(h5, Test)"))
+	// Put
+	case "put":
+		return Write
 
-	//  Run before a get
-	DBQueueFlush()
-	fmt.Println(UICMDStrip("get(h5)"))
+		// Delete
+	case "delete":
+		return Delete
 
-	// Flush on a put
-	fmt.Println(UICMDStrip("put(h5, Joshua)"))
-	DBQueueFlush()
-
-	// Flush before a get
-	DBQueueFlush()
-	fmt.Println(UICMDStrip("get(h5)"))
-
-	// Flush after a delete
-	fmt.Println(UICMDStrip("delete(h5)"))
-	DBQueueFlush()
-
-	// Flush before a get after a delete
-	DBQueueFlush()
-	fmt.Println(UICMDStrip("get(h5)"))
-	fmt.Println(dbQueue)
+	default:
+		return Noop
+	}
 }

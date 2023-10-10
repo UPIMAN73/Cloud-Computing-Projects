@@ -6,7 +6,17 @@
  */
 package main
 
-import "strings"
+import (
+	"fmt"
+	"strconv"
+	"strings"
+)
+
+// Response is used to determine if a
+type Response struct {
+	DBRStats DBRunStatus // Database response stats
+	Values   []string    // Server response value
+}
 
 // User Interface to DB Command
 func UICMDStrip(cmd string) (string, []string) {
@@ -83,4 +93,23 @@ func UICMDRunStatus(cmd string, args []string) DBRunStatus {
 	default:
 		return DBRunStatus{DBERR, Noop}
 	}
+}
+
+// UI Response strip to figure out what our response holds
+func UIResponseStrip(response string) Response {
+	// Split string
+	values := strings.Split(response, ",")
+	fmt.Println(values)
+	fmt.Println()
+	dbrc, err := strconv.Atoi(values[0])
+	CheckError(err)
+	dboc, err := strconv.Atoi(values[1])
+	CheckError(err)
+	var result Response
+	result.DBRStats = DBRunStatus{DBRC(dbrc), DBOC(dboc)}
+	result.Values = []string{values[2]}
+	if len(values) > 3 {
+		result.Values = append(result.Values, values[3])
+	}
+	return result
 }

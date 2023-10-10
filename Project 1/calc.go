@@ -69,3 +69,17 @@ func OneNinePercentile(list []float64) float64 {
 		return 0.0
 	}
 }
+
+// String slices equal
+func stringSlicesEqual(a, b []string) bool {
+	if len(a) != len(b) {
+		return false
+	}
+
+	for i, value := range a {
+		if value != b[i] {
+			return false
+		}
+	}
+	return true
+}

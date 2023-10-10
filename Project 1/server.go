@@ -28,19 +28,23 @@ func RunServerSocket(config Config) {
 	// Server Host Parameters
 	fmt.Printf("Server Role:\n\tPort: %s\n", address)
 
+	// Setup a connection to ping
+	connection, err := server.Accept()
+	CheckError(err)
+	fmt.Println("Client Connected!")
+
 	// Server Loop
 	for serverTrigger := false; !serverTrigger; {
-		// Setup a connection to ping
-		connection, err := server.Accept()
-		CheckError(err)
-		fmt.Println("Client Connected!")
-
-		// BIG TODO
 		// DB Implementation
 
 		// Read the message from client
 		messageLength, err := connection.Read(buffer)
-		CheckError(err)
+		if err != nil {
+			fmt.Println("Connection Closed")
+			errc := connection.Close()
+			CheckError(errc)
+			return
+		}
 
 		fmt.Println(string(buffer[:messageLength]))
 		cmdMessage := string(buffer[:messageLength])
