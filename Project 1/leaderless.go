@@ -11,6 +11,10 @@ import (
 	"net"
 )
 
+const (
+	Quarom = 3 // 3 out of 5 servers must produce the same value otherwise we must restart the process
+)
+
 // Leaderless Client Socket Function
 func LeaderlessClientSocket(config Config) {
 	// TODO Quarom
@@ -44,7 +48,7 @@ func LeaderlessClientSocket(config Config) {
 	for clientTrigger := false; !clientTrigger; {
 		for hostID, connection := range connections {
 			// send value
-			_, err := connection.Write([]byte("Put(A, Hello World!)"))
+			_, err := connection.Write([]byte(""))
 			CheckError(err)
 
 			// read buffer

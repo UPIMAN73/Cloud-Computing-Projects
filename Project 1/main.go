@@ -21,7 +21,7 @@ func main() {
 
 	// Assign flags to variable types
 	flag.StringVar(&configFile, "f", "config.yaml", "Specifies the config file.     Options: \"config-file-name.yaml\".\n")
-	flag.StringVar(&role, "r", "s", "Specifies the config file.     Options: \"config-file-name.yaml\".\n")
+	flag.StringVar(&role, "r", "c", "Specifies the config file.     Options: \"config-file-name.yaml\".\n")
 	flag.StringVar(&executionType, "t", "ll", "Specifies the data-replication type.     Options: leaderless (ll), leadership (ls).\n")
 	flag.BoolVar(&displayHelp, "h", false, "Prints out the help screen.")
 

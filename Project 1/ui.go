@@ -5,3 +5,82 @@
  * @date 2023-09-10
  */
 package main
+
+import "strings"
+
+// User Interface to DB Command
+func UICMDStrip(cmd string) (string, []string) {
+	// filtering arguments & inputs
+	var filterArgs []string
+	filter := strings.Split(cmd, "(")
+
+	// Proplery order the command into a set of values in a slice
+	if len(filter) > 1 {
+		filter[0] = strings.ToLower(filter[0])
+
+		// Managing user input if a second argument exists
+		if strings.Contains(filter[1], ", ") {
+			filterArgs = strings.Split(filter[1], ", ") // easier to split
+		} else if strings.Contains(filter[1], ",") {
+			filterArgs = strings.Split(filter[1], ",") // easier to split
+		} else {
+			// fmt.Println("You did not properly write the db command.\r\n\tFormat:\t CMDTYPE(KEY,VALUE) or CMDTYPE(KEY, VALUE)")
+			// return DBERR, ""
+			// Do Nothing
+			filterArgs = make([]string, 0)
+			filterArgs = append(filterArgs, filter[1])
+		}
+
+		// Cleaning arguments
+		if len(filterArgs) > 0 {
+			filterArgs[len(filterArgs)-1] = filterArgs[len(filterArgs)-1][0 : len(filterArgs[len(filterArgs)-1])-1]
+		} else {
+			// "Passed Args had no values: " + (strings.Join(filter, "(")
+		}
+	}
+	return filter[0], filterArgs
+}
+
+// User Interface Command Pass
+func UICMDPass(cmd string, args []string) DBRunStatus {
+	// Command Action
+	switch cmd {
+	// Read
+	case "get":
+		return DBRunStatus{DBACK, Read}
+
+	// Put
+	case "put":
+		DBEnqueue(DBCommand{Write, args[0], args[1]})
+		return DBRunStatus{DBACK, Write}
+
+		// Delete
+	case "delete":
+		DBEnqueue(DBCommand{Delete, args[0], ""})
+		return DBRunStatus{DBACK, Delete}
+
+	default:
+		return DBRunStatus{DBERR, Noop}
+	}
+}
+
+// User Interface Command Pass
+func UICMDRunStatus(cmd string, args []string) DBRunStatus {
+	// Command Action
+	switch cmd {
+	// Read
+	case "get":
+		return DBRunStatus{DBACK, Read}
+
+	// Put
+	case "put":
+		return DBRunStatus{DBACK, Write}
+
+		// Delete
+	case "delete":
+		return DBRunStatus{DBACK, Delete}
+
+	default:
+		return DBRunStatus{DBERR, Noop}
+	}
+}

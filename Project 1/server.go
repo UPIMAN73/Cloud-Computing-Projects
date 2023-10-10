@@ -9,11 +9,13 @@ package main
 import (
 	"fmt"
 	"net"
+	"strconv"
 )
 
 // Pong role as a socket server
 func RunServerSocket(config Config) {
 	// Environment definitions
+	var dbOutput string
 	buffer := make([]byte, 128) // Message buffer
 	address := ":" + config.Ports.Socket
 
@@ -41,10 +43,24 @@ func RunServerSocket(config Config) {
 		CheckError(err)
 
 		fmt.Println(string(buffer[:messageLength]))
+		cmdMessage := string(buffer[:messageLength])
 
 		// Sending message
-		messageOut := []byte(UICMDStrip(string(buffer[:messageLength])))
-		_, err = connection.Write(messageOut)
+		dbCommand, dbArgs := UICMDStrip(cmdMessage)
+		dbResponse := UICMDPass(dbCommand, dbArgs)
+		if dbResponse.ResponseCode == DBACK {
+			// Do Nothing
+			if dbResponse.OPCode != Noop {
+				DBQueueFlush()
+				dbOutput = DBGet(dbArgs[0])
+			} else {
+				fmt.Println("No Operation")
+			}
+		}
+
+		// Message Out
+		messageOut := strconv.Itoa(int(dbResponse.ResponseCode)) + "," + strconv.Itoa(int(dbResponse.OPCode)) + "," + dbOutput
+		_, err = connection.Write([]byte(messageOut))
 
 		// We don't use check error for this because we need to close the socket, then panic
 		if err != nil {

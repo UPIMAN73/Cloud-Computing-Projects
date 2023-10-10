@@ -8,7 +8,6 @@ package main
 
 import (
 	"fmt"
-	"strings"
 )
 
 // Database used for program
@@ -174,60 +173,6 @@ func DBDelete(Key string) {
 	}
 }
 
-// User Interface to DB Command
-func UICMDStrip(cmd string) DBRunStatus {
-	// filtering arguments & inputs
-	var filterArgs []string
-	filter := strings.Split(cmd, "(")
-
-	// Proplery order the command into a set of values in a slice
-	if len(filter) > 1 {
-		filter[0] = strings.ToLower(filter[0])
-
-		// Managing user input if a second argument exists
-		if strings.Contains(filter[1], ", ") {
-			filterArgs = strings.Split(filter[1], ", ") // easier to split
-		} else if strings.Contains(filter[1], ",") {
-			filterArgs = strings.Split(filter[1], ",") // easier to split
-		} else {
-			// fmt.Println("You did not properly write the db command.\r\n\tFormat:\t CMDTYPE(KEY,VALUE) or CMDTYPE(KEY, VALUE)")
-			// return DBERR, ""
-			// Do Nothing
-			filterArgs = make([]string, 0)
-			filterArgs = append(filterArgs, filter[1])
-		}
-
-		// Cleaning arguments
-		if len(filterArgs) > 0 {
-			filterArgs[len(filterArgs)-1] = filterArgs[len(filterArgs)-1][0 : len(filterArgs[len(filterArgs)-1])-1]
-		} else {
-			// "Passed Args had no values: " + (strings.Join(filter, "(")
-			return DBRunStatus{DBERR, Noop}
-		}
-	} else {
-		return DBRunStatus{DBERR, Noop}
-	}
-
-	// Command Action
-	if filter[0] == "get" {
-		// Read
-		return DBRunStatus{DBACK, Read}
-	} else if filter[0] == "put" {
-		// Put
-		DBEnqueue(DBCommand{Write, filterArgs[0], filterArgs[1]})
-		return DBRunStatus{DBACK, Write}
-	} else if filter[0] == "delete" {
-		// Delete
-		DBEnqueue(DBCommand{Delete, filterArgs[0], ""})
-		return DBRunStatus{DBACK, Delete}
-	} else {
-		// Do Nothing
-		// fmt.Println("")
-		// "You did not pass a proper command!"
-		return DBRunStatus{DBERR, Noop}
-	}
-}
-
 // Database test
 func DBTest() {
 
@@ -254,14 +199,4 @@ func DBTest() {
 	DBQueueFlush()
 	fmt.Println(UICMDStrip("get(h5)"))
 	fmt.Println(dbQueue)
-	// DBEnqueue(DBCommand{Write, "h5", "Test"})
-	// DBEnqueue(DBCommand{Delete, "h5", ""})
-	// DBEnqueue(DBCommand{Write, "h5", "Joshua!"})
-	// DBQueueRun(1)
-	// fmt.Println(DBGet("h5"))
-	// DBEnqueue(DBCommand{Delete, "h5", ""})
-	// DBQueueRun(1)
-	// fmt.Println(DBGet("h5"))
-
-	// Commands works!
 }
