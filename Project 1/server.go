@@ -44,18 +44,30 @@ func RunServerSocket(config Config) {
 	for serverTrigger = false; !serverTrigger; {
 		// Client loops
 		for hostID, connection := range connMap {
-			if len(connMap) == 0 {
-				serverTrigger = true
-				break
-			}
+			// If no connections are left then just stop the server
+			// if len(connMap) == 0 {
+			// 	serverTrigger = true
+			// 	break
+			// }
 
 			// Read the message from client
 			messageLength, err := connection.Read(buffer)
+
+			// If error from connection from client
 			if err != nil {
 				fmt.Printf("Host: %s Connection Closed", hostID)
 				errc := connection.Close()
 				delete(connMap, hostID)
-				CheckError(errc)
+				fmt.Println(errc)
+				continue
+			}
+
+			// If no connection from client
+			if messageLength == 0 {
+				errc := connection.Close()
+				delete(connMap, hostID)
+				fmt.Println(errc)
+				continue
 			}
 
 			// Prints out the message for ease of understanding
@@ -89,6 +101,7 @@ func RunServerSocket(config Config) {
 				errc := connection.Close()
 				delete(connMap, hostID)
 				CheckError(errc)
+				continue
 			}
 		}
 	}
