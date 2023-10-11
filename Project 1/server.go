@@ -32,6 +32,7 @@ func RunServerSocket(config Config) {
 	fmt.Printf("Server Role:\n\tPort: %s\n", address)
 
 	// Starting threading (Goroutine) for client server connection handling
+	connMap = make(map[string]net.Conn)
 	go ClientHandling(&server)
 
 	// Wait for client before fully starting server
@@ -41,13 +42,13 @@ func RunServerSocket(config Config) {
 
 	// Server Loop
 	for serverTrigger = false; !serverTrigger; {
-		if len(connMap) == 0 {
-			serverTrigger = true
-			return
-		}
-
 		// Client loops
 		for hostID, connection := range connMap {
+			if len(connMap) == 0 {
+				serverTrigger = true
+				break
+			}
+
 			// Read the message from client
 			messageLength, err := connection.Read(buffer)
 			if err != nil {
