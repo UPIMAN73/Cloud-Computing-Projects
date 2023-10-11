@@ -12,6 +12,9 @@ import (
 	"strconv"
 )
 
+var serverTrigger bool = false
+var connMap map[string]net.Conn
+
 // Pong role as a socket server
 func RunServerSocket(config Config) {
 	// Environment definitions
@@ -28,51 +31,79 @@ func RunServerSocket(config Config) {
 	// Server Host Parameters
 	fmt.Printf("Server Role:\n\tPort: %s\n", address)
 
-	// Setup a connection to ping
-	connection, err := server.Accept()
-	CheckError(err)
-	fmt.Println("Client Connected!")
+	// Starting threading (Goroutine) for client server connection handling
+	go ClientHandling(&server)
+
+	// Wait for client before fully starting server
+	for len(connMap) == 0 {
+		// Do Nothing
+	}
 
 	// Server Loop
-	for serverTrigger := false; !serverTrigger; {
-		// DB Implementation
-
-		// Read the message from client
-		messageLength, err := connection.Read(buffer)
-		if err != nil {
-			fmt.Println("Connection Closed")
-			errc := connection.Close()
-			CheckError(errc)
+	for serverTrigger = false; !serverTrigger; {
+		if len(connMap) == 0 {
+			serverTrigger = true
 			return
 		}
 
-		fmt.Println(string(buffer[:messageLength]))
-		cmdMessage := string(buffer[:messageLength])
+		// Client loops
+		for hostID, connection := range connMap {
+			// Read the message from client
+			messageLength, err := connection.Read(buffer)
+			if err != nil {
+				fmt.Printf("Host: %s Connection Closed", hostID)
+				errc := connection.Close()
+				delete(connMap, hostID)
+				CheckError(errc)
+			}
 
-		// Sending message
-		dbCommand, dbArgs := UICMDStrip(cmdMessage)
-		dbResponse := UICMDPass(dbCommand, dbArgs)
-		if dbResponse.ResponseCode == DBACK {
-			// Do Nothing
-			if dbResponse.OPCode != Noop {
-				DBQueueFlush()
-				dbOutput = DBGet(dbArgs[0])
-			} else {
-				fmt.Println("No Operation")
+			// Prints out the message for ease of understanding
+			fmt.Println(string(buffer[:messageLength]))
+			cmdMessage := string(buffer[:messageLength])
+
+			// DB Message processing
+			dbCommand, dbArgs := UICMDStrip(cmdMessage)
+			dbResponse := UICMDPass(dbCommand, dbArgs)
+
+			// Check if DB Command responds in ack
+			if dbResponse.ResponseCode == DBACK {
+				// Do Nothing
+				if dbResponse.OPCode != Noop {
+					DBQueueFlush()
+					dbOutput = DBGet(dbArgs[0])
+				} else {
+					fmt.Println("No Operation")
+				}
+			}
+
+			// Message Out
+			messageOut := strconv.Itoa(int(dbResponse.ResponseCode)) + "," + strconv.Itoa(int(dbResponse.OPCode)) + "," + dbOutput
+			_, err = connection.Write([]byte(messageOut))
+
+			// We don't use check error for this because we need to close the socket, then panic
+			if err != nil {
+				fmt.Println("A write error occured to the socket stream, please check to make sure something did not happen to the client.")
+				fmt.Printf("Host: %s Connection Closed", hostID)
+				defer CheckError(err)
+				errc := connection.Close()
+				delete(connMap, hostID)
+				CheckError(errc)
 			}
 		}
+	}
+}
 
-		// Message Out
-		messageOut := strconv.Itoa(int(dbResponse.ResponseCode)) + "," + strconv.Itoa(int(dbResponse.OPCode)) + "," + dbOutput
-		_, err = connection.Write([]byte(messageOut))
-
-		// We don't use check error for this because we need to close the socket, then panic
+// Client handling for server using goroutines
+func ClientHandling(server *net.Listener) {
+	// Server Trigger
+	for serverTrigger == false {
+		// Setup a connection to ping
+		connection, err := (*server).Accept()
 		if err != nil {
-			fmt.Println("A write error occured to the socket stream, please check to make sure something did not happen to the client.")
-			defer CheckError(err)
-			errc := connection.Close()
-			CheckError(errc)
-			serverTrigger = true
+			fmt.Println(err)
+			connection.Close()
 		}
+		fmt.Println("Client Connected!")
+		connMap[connection.RemoteAddr().String()] = connection
 	}
 }
