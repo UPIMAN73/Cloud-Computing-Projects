@@ -16,7 +16,7 @@ var serverTrigger bool = false
 var connMap map[string]net.Conn
 
 // Pong role as a socket server
-func RunServerSocket(config Config) {
+func RunServerSocket(ID int, config Config) {
 	// Environment definitions
 	var dbOutput string
 	buffer := make([]byte, 128) // Message buffer
@@ -44,12 +44,6 @@ func RunServerSocket(config Config) {
 	for serverTrigger = false; !serverTrigger; {
 		// Client loops
 		for hostID, connection := range connMap {
-			// If no connections are left then just stop the server
-			// if len(connMap) == 0 {
-			// 	serverTrigger = true
-			// 	break
-			// }
-
 			// Read the message from client
 			messageLength, err := connection.Read(buffer)
 
@@ -93,7 +87,7 @@ func RunServerSocket(config Config) {
 			messageOut := strconv.Itoa(int(dbResponse.ResponseCode)) + "," + strconv.Itoa(int(dbResponse.OPCode)) + "," + dbOutput
 			_, err = connection.Write([]byte(messageOut))
 
-			// We don't use check error for this because we need to close the socket, then panic
+			// We don't use check error for this because we need to close the socket, then panic if another error occurs
 			if err != nil {
 				fmt.Println("A write error occured to the socket stream, please check to make sure something did not happen to the client.")
 				fmt.Printf("Host: %s Connection Closed", hostID)

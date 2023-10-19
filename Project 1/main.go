@@ -9,6 +9,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"math"
 )
 
 // Main system function
@@ -19,13 +20,15 @@ func main() {
 	var displayHelp bool     // 1 = help, 0 = no help prompt
 	var executionType string // ls = leadership, ll = leaderless
 	var role string          // c = client, s = server
+	var id int               // id = # (only needed for server)
 
 	// Assign flags to variable types
-	flag.StringVar(&commandFile, "d", "dbcmd.txt", "Specifies the Database Command List file.     Options: \"dbcmd.txt\" (NO .CSV please, it doesn't work well).\n")
-	flag.StringVar(&configFile, "f", "config.yaml", "Specifies the config file.     Options: \"config-file-name.yaml\".\n")
-	flag.StringVar(&role, "r", "s", "Specifies the config file.     Options: \"config-file-name.yaml\".\n")
-	flag.StringVar(&executionType, "t", "ll", "Specifies the data-replication type.     Options: leaderless (ll), leadership (ls).\n")
-	flag.BoolVar(&displayHelp, "h", false, "Prints out the help screen.")
+	flag.StringVar(&commandFile, "d", "dbcmd.txt", "Specifies the Database Command List file.     Options: \"dbcmd.txt\" (NO .CSV please, it doesn't work well).\r\n")
+	flag.StringVar(&configFile, "f", "config.yaml", "Specifies the config file.     Options: \"config-file-name.yaml\".\r\n")
+	flag.StringVar(&role, "r", "s", "Specifies the config file.     Options: \"config-file-name.yaml\".\r\n")
+	flag.StringVar(&executionType, "t", "ll", "Specifies the data-replication type.     Options: leaderless (ll), leadership (ls).\r\n")
+	flag.IntVar(&id, "id", 0, "Specifies the server ID needed for when a client is connecting, it knows which server it is connecting too. Example: '1'\r\n")
+	flag.BoolVar(&displayHelp, "h", false, "Prints out the help screen.\r\n")
 
 	// Parse command-line flags
 	flag.Parse()
@@ -37,12 +40,13 @@ func main() {
 		fmt.Println(DefaultString())
 		return
 	} else {
-		// Definitions
-		var config Config
 		// var db map[string]string
 
 		// Loading config file
 		LoadConfig(configFile, &config)
+
+		// Define Quarom
+		Quarom = int(math.Floor(float64(len(config.Hosts)/2))) + 1
 
 		// Initilize the database
 		dbCmds := ReadDBCmdFile(commandFile)
@@ -57,13 +61,15 @@ func main() {
 
 		// Run
 		if role == "s" {
-			RunServerSocket(config)
+			if id > 0 {
+				RunServerSocket(id, config)
+			} else {
+				fmt.Println("ID Was not defined, please define it with \"-id #\" or \"-id=#\".")
+			}
 		} else if role == "c" {
 			switch executionType {
 			case "ll":
 				LeaderlessClientSocket(config, dbCmds)
-			case "ls":
-				LeadershipClientSocket(config)
 			default:
 				PrintCommandHelp()
 			}

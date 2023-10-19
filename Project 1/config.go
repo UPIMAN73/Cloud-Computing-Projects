@@ -24,13 +24,16 @@ type Config struct {
 	Ports Ports_t  `yaml:"Ports"`
 }
 
+// Config Global
+var config Config
+
 // Load items from the config file into an config object
-func LoadConfig(FileName string, config *Config) {
+func LoadConfig(FileName string, cfg *Config) {
 	// Defining configuration
 	confData, err := os.ReadFile(FileName)
 	CheckError(err)
 
 	// Yaml config parsing
-	err = yaml.Unmarshal(confData, &config)
+	err = yaml.Unmarshal(confData, &cfg)
 	CheckError(err)
 }

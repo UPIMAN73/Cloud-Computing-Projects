@@ -1,8 +1,6 @@
 package main
 
-const (
-	Quarom = 1 // 3 out of 5 servers must produce the same value otherwise we must restart the process
-)
+var Quarom int
 
 // Checks to make sure that the responses from the servers are accurate with a quorom
 func QuoromCheck(responseList map[string]Response, cmd string) int {
