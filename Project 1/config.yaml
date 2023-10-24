@@ -1,6 +1,8 @@
 ---
 Hosts:
   - "40.76.138.16"
+  - "172.190.113.180"
+  - "20.121.54.2"
   - "localhost"
 Ports:
   # KV Storage Service port

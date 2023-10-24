@@ -1,9 +1,9 @@
 #!/bin/sh
 
-# # install golang
+# install golang
 echo "Installing golang"
-# sudo snap install go --classic # running the install through snap
-sudo apt install golang-1.20
+sudo snap install go --classic # running the install through snap
+# sudo apt install golang-1.20
 
 # # Check go version
 clear
@@ -11,12 +11,13 @@ echo "Checking installed go version"
 go version
 echo "\n\n"
 
-# # Getting associated dependencies and modules for the program
+# Getting associated dependencies and modules for the program
 go get main
+go mod init main
 go mod tidy
 
 # Run the program
-go run main -r s -id 2
+go run main -r s -id 3
 
 # Let the user know they have to edit the config.yaml file
 echo "\n\n\n\tDon't forget to edit the \"config.yaml\" file so that way you can associate the ping (client) to the pong (server) host."
