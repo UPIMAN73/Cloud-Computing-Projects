@@ -7,7 +7,6 @@
 package main
 
 import (
-	"fmt"
 	"strconv"
 	"strings"
 )
@@ -55,6 +54,8 @@ func UICMDStrip(cmd string) (string, []string) {
 func UICMDPass(cmd string, args []string) DBRunStatus {
 	// Command Action
 	switch cmd {
+	case "benchmark":
+		return DBRunStatus{DBACK, Noop}
 	// Read
 	case "get":
 		return DBRunStatus{DBACK, Read}
@@ -78,6 +79,10 @@ func UICMDPass(cmd string, args []string) DBRunStatus {
 func UICMDRunStatus(cmd string, args []string) DBRunStatus {
 	// Command Action
 	switch cmd {
+	// Benchmark
+	case "benchmark":
+		return DBRunStatus{DBACK, Noop}
+
 	// Read
 	case "get":
 		return DBRunStatus{DBACK, Read}
@@ -99,8 +104,8 @@ func UICMDRunStatus(cmd string, args []string) DBRunStatus {
 func UIResponseStrip(response string) Response {
 	// Split string
 	values := strings.Split(response, ",")
-	fmt.Println(values)
-	fmt.Println()
+	// fmt.Println(values)
+	// fmt.Println()
 	dbrc, err := strconv.Atoi(values[0])
 	CheckError(err)
 	dboc, err := strconv.Atoi(values[1])

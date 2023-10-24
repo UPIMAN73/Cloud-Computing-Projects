@@ -64,6 +64,29 @@ func RunServerSocket(ID int, config Config) {
 				continue
 			}
 
+			// Benchmark Condition
+			if string(buffer[:messageLength]) == "benchmark()" {
+				fmt.Println("Benchmark Setup")
+				// Message Out
+				messageOut := strconv.Itoa(int(ID))
+
+				// Write
+				_, err = connection.Write([]byte(messageOut))
+
+				// We don't use check error for this because we need to close the socket, then panic if another error occurs
+				if err != nil {
+					fmt.Println("A write error occured to the socket stream, please check to make sure something did not happen to the client.")
+					fmt.Printf("Host: %s Connection Closed", hostID)
+					defer CheckError(err)
+					errc := connection.Close()
+					delete(connMap, hostID)
+					CheckError(errc)
+					continue
+				}
+				fmt.Println("Benchmark Start")
+				continue
+			}
+
 			// Prints out the message for ease of understanding
 			fmt.Println(string(buffer[:messageLength]))
 			cmdMessage := string(buffer[:messageLength])

@@ -25,7 +25,7 @@ func main() {
 	// Assign flags to variable types
 	flag.StringVar(&commandFile, "d", "dbcmd.txt", "Specifies the Database Command List file.     Options: \"dbcmd.txt\" (NO .CSV please, it doesn't work well).\r\n")
 	flag.StringVar(&configFile, "f", "config.yaml", "Specifies the config file.     Options: \"config-file-name.yaml\".\r\n")
-	flag.StringVar(&role, "r", "s", "Specifies the config file.     Options: \"config-file-name.yaml\".\r\n")
+	flag.StringVar(&role, "r", "c", "Specifies the config file.     Options: \"config-file-name.yaml\".\r\n")
 	flag.StringVar(&executionType, "t", "ll", "Specifies the data-replication type.     Options: leaderless (ll), leadership (ls).\r\n")
 	flag.IntVar(&id, "id", 0, "Specifies the server ID needed for when a client is connecting, it knows which server it is connecting too. Example: '1'\r\n")
 	flag.BoolVar(&displayHelp, "h", false, "Prints out the help screen.\r\n")
