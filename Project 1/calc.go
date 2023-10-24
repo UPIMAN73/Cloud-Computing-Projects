@@ -64,7 +64,11 @@ func OneNinePercentile(list []float64) float64 {
 
 	// Find the 99% of the given list
 	if len(list) > 0 {
-		return list[int(math.Round(float64(len(list))*0.999))]
+		if int(math.Round(float64(len(list))*0.999)) == len(list) {
+			return list[int(math.Round(float64(len(list))*0.999))-1]
+		} else {
+			return list[int(math.Round(float64(len(list))*0.999))]
+		}
 	} else {
 		return 0.0
 	}

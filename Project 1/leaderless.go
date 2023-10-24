@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	EXPTIME = 10
+	EXPTIME = 60
 )
 
 // Time Stamps
