@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	EXPTIME = 60
+	EXPTIME = 10
 )
 
 // Time Stamps
@@ -26,7 +26,7 @@ type TimeStamp struct {
 // Benchmark
 type Benchmark struct {
 	ID    int
-	Times []TimeStamp
+	Times []float64
 }
 
 // Leaderless Client Socket Function
@@ -67,7 +67,7 @@ func LeaderlessClientSocket(config Config, commandList []string) {
 	var err error
 
 	// Benchmark Allocation
-	benchmark := make(map[string]Benchmark, 0)
+	benchmark := make(map[string]*Benchmark, 0)
 	currentTimeStamp := TimeStamp{initialTime: time.Now(), finalTime: time.Now()}
 	for hostID, connection := range connections {
 		_, err = connection.Write([]byte("benchmark()"))
@@ -93,14 +93,14 @@ func LeaderlessClientSocket(config Config, commandList []string) {
 			errc := connection.Close()
 			CheckError(errc)
 		}
-		benchmark[hostID] = Benchmark{ID: ID, Times: make([]TimeStamp, 0)}
+		benchmark[hostID] = &Benchmark{ID: ID, Times: make([]float64, 1)}
 	}
 
 	// Client Loop
 	buffer := make([]byte, 128)
 	startTime := time.Now()
 	fmt.Println(time.Now().Sub(startTime))
-	for time.Now().Sub(startTime).Seconds() < EXPTIME {
+	for time.Since(startTime).Seconds() < EXPTIME {
 		for commandIndex < len(commandList) {
 			for hostID, connection := range connections {
 				if clientTrigger {
@@ -122,7 +122,7 @@ func LeaderlessClientSocket(config Config, commandList []string) {
 
 				// Add response to the response list
 				responseList[hostID] = UIResponseStrip(string(buffer[:messageLength]))
-				benchmark[hostID].Times = append(benchmark[hostID].Times, TimeStamp{initialTime: currentTimeStamp.initialTime, finalTime: currentTimeStamp.finalTime})
+				benchmark[hostID].Times = append(benchmark[hostID].Times, float64(currentTimeStamp.finalTime.Sub(currentTimeStamp.initialTime).Milliseconds()))
 
 				// We don't use check error for this because we need to close the socket, then panic
 				if err != nil {
@@ -140,22 +140,17 @@ func LeaderlessClientSocket(config Config, commandList []string) {
 	}
 
 	// Calculations
-	var timeDifferences map[int][]float64
-	var averages map[int]float64
-	var medians map[int]float64
-	var ZNines map[int]float64
-	var ONines map[int]float64
+	averages := make(map[int]float64, 0)
+	medians := make(map[int]float64, 0)
+	ZNines := make(map[int]float64, 0)
+	ONines := make(map[int]float64, 0)
 
 	// Benchmark Calculations
 	for _, host := range benchmark {
-		timeDifferences[host.ID] = make([]float64, len(host.Times))
-		for i := 0; i < len(timeDifferences[host.ID]); i++ {
-			timeDifferences[host.ID][i] = float64(host.Times[i].finalTime.Sub(host.Times[i].initialTime).Milliseconds())
-		}
-		averages[host.ID] = Average(timeDifferences[host.ID])
-		medians[host.ID] = Median(timeDifferences[host.ID])
-		ZNines[host.ID] = ZeroNinePercentile(timeDifferences[host.ID])
-		ONines[host.ID] = OneNinePercentile(timeDifferences[host.ID])
+		averages[host.ID] = Average(host.Times)
+		medians[host.ID] = Median(host.Times)
+		ZNines[host.ID] = ZeroNinePercentile(host.Times)
+		ONines[host.ID] = OneNinePercentile(host.Times)
 	}
 
 	// Benchmark Printouts

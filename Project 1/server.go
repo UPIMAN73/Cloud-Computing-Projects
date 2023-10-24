@@ -66,7 +66,6 @@ func RunServerSocket(ID int, config Config) {
 
 			// Benchmark Condition
 			if string(buffer[:messageLength]) == "benchmark()" {
-				fmt.Println("Benchmark Setup")
 				// Message Out
 				messageOut := strconv.Itoa(int(ID))
 
@@ -83,7 +82,6 @@ func RunServerSocket(ID int, config Config) {
 					CheckError(errc)
 					continue
 				}
-				fmt.Println("Benchmark Start")
 				continue
 			}
 
