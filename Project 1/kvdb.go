@@ -14,7 +14,7 @@ import (
 var globalDB map[string]string = make(map[string]string, 0)
 
 // Making DB Queue
-var dbQueue DBQueue = DBQueue{make([]DBCommand, 0), MAXQUEUESIZE}
+var dbQueue DBQueue = DBQueue{make([]DBCommand, 0), MAXQUEUESIZE, 0}
 
 // Declares operations used to DB
 type DBOC int
@@ -46,13 +46,14 @@ type DBCommand struct {
 
 // Database queue of commands that are ready to be processed
 const (
-	MAXQUEUESIZE = 5
+	MAXQUEUESIZE = 10000
 )
 
 // DB Queue Type
 type DBQueue struct {
 	History []DBCommand // The slice of items in the queue for operating on when it is ready
 	Size    int         // Maximum Size of the queue
+	Item    int         // Current Item in command run queue
 }
 
 // Defines whether or not the operation was successful
