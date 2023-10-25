@@ -17,7 +17,7 @@ go mod init main
 go mod tidy
 
 # Run the program
-go run main -r s -id 3
+go run main -r s -id 1
 
 # Let the user know they have to edit the config.yaml file
 echo "\n\n\n\tDon't forget to edit the \"config.yaml\" file so that way you can associate the ping (client) to the pong (server) host."

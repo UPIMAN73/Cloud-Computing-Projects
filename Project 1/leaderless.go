@@ -164,25 +164,51 @@ func LeaderlessClientSocket(config Config, commandList []string) {
 	}
 
 	// Benchmark Printouts
+	// Write Average
+	fmt.Print("\tAverage: ")
+	fmt.Println(averages)
+
+	// Write Median
+	fmt.Print("\tMedian: ")
+	fmt.Println(medians)
+
+	// Write 99%
+	fmt.Print("\t99th-Percentile: ")
+	fmt.Println(ZNines)
+
+	// Write 99.9%
+	fmt.Print("\t99.9th-Percentile: ")
+	fmt.Println(ONines)
+	fmt.Println()
+
+	// Benchmark Write Printouts
 	fmt.Println("Writing Benchmark stats to file: 'kvdb_stats.txt'")
 	f, err := os.Create("kvdb_stats.txt")
 	CheckError(err)
 
 	// Write Average
-	f.WriteString("Average: ")
-	f.WriteString(fmt.Sprintf("%f\n", averages))
+	f.WriteString("Average:\r\n")
+	for IDValue, Value := range averages {
+		f.WriteString(fmt.Sprintf("\t- %d\t%fms\r\n", IDValue, Value))
+	}
 
 	// Write Median
-	f.WriteString("Median: ")
-	f.WriteString(fmt.Sprintf("%f\n", medians))
+	f.WriteString("\r\nMedian:\r\n")
+	for IDValue, Value := range medians {
+		f.WriteString(fmt.Sprintf("\t- %d\t%fms\r\n", IDValue, Value))
+	}
 
 	// Write 99%
-	f.WriteString("99th-Percentile: ")
-	f.WriteString(fmt.Sprintf("%f\n", ZNines))
+	f.WriteString("\r\n99th-Percentile:\r\n")
+	for IDValue, Value := range ZNines {
+		f.WriteString(fmt.Sprintf("\t- %d\t%fms\r\n", IDValue, Value))
+	}
 
 	// Write 99.9%
-	f.WriteString("99.9th-Percentile: ")
-	f.WriteString(fmt.Sprintf("%f\n", ONines))
+	f.WriteString("\r\n99.9th-Percentile:\r\n")
+	for IDValue, Value := range ONines {
+		f.WriteString(fmt.Sprintf("\t- %d\t%fms\r\n", IDValue, Value))
+	}
 
 	// Close file stream
 	f.Close()
