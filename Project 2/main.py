@@ -124,7 +124,7 @@ def Shuffle(inputStorage):
     return result
 
 # Reduce stage of Map-Reduce
-def Reduce(shuffledData):
+def Reduce(shuffledData, header):
     # Variable definitions
     result = {}
     # item = {"word" : ((ID1, COUNT_1), (ID2, COUNT_2), ...)} # Final Result
@@ -136,10 +136,11 @@ def Reduce(shuffledData):
 
         # First step of reduction
         for item in items:
-            if str(item[0]) in temp.keys():
-                temp[str(item[0])] += 1
+            headerName = header[item[0] - 1]
+            if headerName in temp.keys():
+                temp[headerName] += 1
             else:
-                temp[str(item[0])] = 1
+                temp[headerName] = 1
         
         # Second step of reduction
         # Convert the temp variable into a proper tupule
@@ -164,8 +165,8 @@ Output = {}
 ###########################
 try:
     # Yaml File Orchastration
-    resourceYamlFileName = "books.yaml"
-    with open(resourceYamlFileName, "r") as yamlFile:
+    resourceHeaders = []
+    with open("books.yaml", "r") as yamlFile:
         try:
             resourceYaml = yaml.safe_load(yamlFile)
         except yaml.YAMLError as exc:
@@ -178,6 +179,7 @@ try:
 
         # REST API Request to parse and load data into proper order
         data = getRawContent(book[1])
+        resourceHeaders.append(book[0])
         Map(data, (ind + 1), storage=storage, allocSize=100)
 
 
@@ -186,7 +188,7 @@ except KeyboardInterrupt:
 
 finally:
     shuffledStorage = Shuffle(storage)
-    Output = Reduce(shuffledStorage)
+    Output = Reduce(shuffledStorage, resourceHeaders)
     
     # Save storage container into a proper format
     with open("Output-Storage-Container.json", "w") as outputFile:
