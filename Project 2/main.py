@@ -11,7 +11,6 @@ __status__ = "Development"
 #############
 from time import time as now
 import requests
-import datetime
 import json
 import yaml
 import re
