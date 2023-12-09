@@ -1,9 +1,19 @@
+__author__ = "Joshua Calzadillas"
+__copyright__ = "TBD"
+__credits__ = ["Joshua Calzadillas"]
+__license__ = "TBD"
+__version__ = "1.0.0"
+__maintainer__ = "Joshua Calzadillas"
+__status__ = "Development"
+
+#############
+# Libraries #
+#############
 import requests
 import json
 import yaml
 import sys
 import re
-
 
 
 ############################
@@ -32,16 +42,15 @@ def getRawContent(url):
         for sentence in rawData:
             scrappedData.extend(sentence.split(" "))
     
-    # Clean  up data
-    cleanEmpty(scrappedData)
+    # Clean out empty strings
+    while ('' in scrappedData):
+        scrappedData.remove('')
     
     # Return Data
     return scrappedData
 
-# Clean out empty strings
-def cleanEmpty(rawData):
-    while ('' in rawData):
-        rawData.remove('')
+
+
 
 #################################
 # Storage Container Definitions #
@@ -84,81 +93,70 @@ def containerAllocate(container, data, splitSize):
 
 
 
-
 ##########################
 # Map Reduce Definitions #
 ##########################
 
 # Map Shuffle
 """ Map Shuffle stages are put into one function for ease of managing data flow """
-def MapShuffle(rawData, ID, storage, allocSize):
-    # Convert Data into a tupule for storage allocation (Mappinng)
+def Map(rawData, ID, storage, allocSize):
+    # Convert Data into a tupule for storage allocation
     data = [(ID, item) for item in rawData] 
-
-    # Shuffle (Allocate)
+    
+    # Mappinng stage
     storage = containerAllocate(storage, data, splitSize=allocSize)    
     return storage
 
-# Filtering Stage
-def wordContentValue(item, term, filterThreashold=0.8):
-    result = False
-    if term.lower() in item[0].lower():
-        # string is word check
-        if item[0].lower() == term.lower():
-            result = True
-        
-        # Item Length check
-        elif len(term) < len(item[0]):
-            lengths = 0
-            stringSplit = item[0].split(term)
-            for i in range(0, len(stringSplit)):
-                lengths += len(stringSplit[i])
-            result = len(term) / (lengths + len(term)) >= filterThreashold
-        
-        # Just don't worry about it
-        else:
-            result = False
-    return result
-
-# Map Reduce Filter based on string
-def filterReduceString(bucket, term, filterThreashold=0.8):
-    result = []
-    if len(term) > 0 and type(term) == str:
-        for item in bucket["data"]:
-            if wordContentValue(item[1], term, filterThreashold=filterThreashold):
-                result.append(item)
-        return result
-
-# Filter Reduce
-def filterReduce(bucket, filter, filterThreashold=0.8):
+# Shuffle stage of Map Reduce
+def Shuffle(inputStorage):
+    # Variable definitions
     result = {}
-    # Do list stuff
-    if type(filter) == list:
-        for value in filter:
-            filterResults = filterReduceString(bucket=bucket, term=value, filterThreashold=filterThreashold)
-            result[value] = {"length" : len(filterResults), "values" : filterResults}
-    
-    # Do string filter
-    elif type(filter) == str:
-        filterResults = filterReduceString(bucket, filter)
-        result = {filter : {"length" : len(filterResults), "values" : filterResults}}
+
+    # Shuffle stage
+    for bucket in inputStorage["container"]:
+        for item in bucket["data"]:
+            if item[1] in result.keys():
+                result[item[1]].append(item)
+            else:
+                result[item[1]] = [item]
+    print(result)
+    # Return
     return result
 
 # Reduce stage of Map-Reduce
-def Reduce(inputStorage):
-    return
+def Reduce(shuffledData):
+    # Variable definitions
+    result = {}
+    # item = {"word" : ((ID1, COUNT_1), (ID2, COUNT_2), ...)} # Final Result
 
-# mapReduceData = organizeDataToMapReduce(data, "War of the Worlds")
-# print("ID: " + mapReduceData["ID"] + "\r\n\tLength: " + str(mapReduceData["size"]))
-# reduced_values = filterReduce(mapReduceData, ["eBooks"])
-# print(reduced_values)
+    # Reducing filter
+    for word, items in shuffledData:
+        temp = {}
+        result[word] = []
 
-# Storage Bucket
+        # First step of reduction
+        for item in items:
+            if str(item[0]) in temp.keys():
+                temp[str(item[0])] += 1
+            else:
+                temp[str(item[0])] = 1
+        
+        # Second step of reduction
+        # Convert the temp variable into a proper tupule
+        for id, value in temp:
+            result[word].append(tuple(id, value))
+    return result
+
+
+################################
+# Storage Container Definition #
+################################
 storageBlockSize =  5000 
 storageBlocks = 200 
 storage = { "blocks" : storageBlocks,  # Number of buckets inside of the storage container
             "max-size" : storageBlockSize, # Maximum number of items inside of the bucket
             "container" : [{"size" : 0, "data" : []} for i in range(0, storageBlocks)] } # Initilize the storage container
+Output = {}
 
 
 ###########################
@@ -180,22 +178,24 @@ try:
 
         # REST API Request to parse and load data into proper order
         data = getRawContent(book[1])
-        MapShuffle(data, (ind + 1), storage=storage, allocSize=100)
+        Map(data, (ind + 1), storage=storage, allocSize=100)
 
 
 except KeyboardInterrupt:
     print("Keyboard Interrupt Detected!")
 
 finally:
-    # Debug Print storage container
-    for i, bucket in enumerate(storage["container"]):
-        print("Bucket - " + str(i + 1) + " Size: " + str(bucket["size"]))
+    shuffledStorage = Shuffle(storage)
+    Output = Reduce(shuffledStorage)
     
     # Save storage container into a proper format
     with open("Output-Storage-Container.json", "w") as outputFile:
         json.dump(storage, outputFile, indent=2)
 
-
-# bucket storage format
-# bucket_storage_fmt = {"size" : 0, "data" : []}
-
+    # Save storage container into a proper format
+    with open("Output-Shuffle.json", "w") as outputFile:
+        json.dump(shuffledStorage, outputFile, indent=2)
+    
+    # Map Reduced version of a word counter processed and dumped into a JSON file
+    with open("Output-Word-Count.json", "w") as outputFile:
+        json.dump(Output, outputFile, indent=2)
