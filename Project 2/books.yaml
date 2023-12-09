@@ -1,11 +1,11 @@
 ---
 Books:
-  - War_of_the_Worlds : "https://www.gutenberg.org/cache/epub/36/pg36.txt"
-  - Art_of_War : "https://www.gutenberg.org/cache/epub/132/pg132.txt"
-  - Walden : "https://www.gutenberg.org/cache/epub/205/pg205.txt"
-  - Treasure_Island : "https://www.gutenberg.org/cache/epub/120/pg120.txt"
-  - Edgar_Allen_Poe_Works : "https://www.gutenberg.org/cache/epub/2148/pg2148.txt"
-  - Dantes_Inferno : "https://www.gutenberg.org/cache/epub/8800/pg8800.txt"
-  - Sherlock_Holmes : "https://www.gutenberg.org/cache/epub/1661/pg1661.txt"
-  - Peter_Pan : "https://www.gutenberg.org/cache/epub/16/pg16.txt"
+  - ["War_of_the_Worlds", "https://www.gutenberg.org/cache/epub/36/pg36.txt"]
+  - ["Art_of_War", "https://www.gutenberg.org/cache/epub/132/pg132.txt"]
+  - ["Walden", "https://www.gutenberg.org/cache/epub/205/pg205.txt"]
+  - ["Treasure_Island", "https://www.gutenberg.org/cache/epub/120/pg120.txt"]
+  - ["Edgar_Allen_Poe_Works", "https://www.gutenberg.org/cache/epub/2148/pg2148.txt"]
+  - ["Dantes_Inferno", "https://www.gutenberg.org/cache/epub/8800/pg8800.txt"]
+  - ["Sherlock_Holmes", "https://www.gutenberg.org/cache/epub/1661/pg1661.txt"]
+  - ["Peter_Pan", "https://www.gutenberg.org/cache/epub/16/pg16.txt"]
   # - TRS_80_Op_Man : "https://www.gutenberg.org/cache/epub/27469/pg27469.txt"
