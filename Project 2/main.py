@@ -201,6 +201,7 @@ try:
         finalTime = now()
         mapTimings.append(finalTime - initTime)
 
+# Keyboard Interrupt
 except KeyboardInterrupt:
     print("Keyboard Interrupt Detected!")
 
