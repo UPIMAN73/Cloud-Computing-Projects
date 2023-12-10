@@ -70,11 +70,13 @@ def containerAllocate(container, data, splitSize):
 
     # Proper partitioning of the data across the storage container space
     while indexValue < len(data):
+        # If trigger counter has been full
         if triggerCounter >= container["blocks"]:
             print("Storage Container is full please expand your number of blocks or the block size.")
             print("Current Block Count : " + str(container["blocks"]))
             print("Current Block Size : " + str(container["max-size"]))
             break
+
         # Finding the maximum allowable split size for proper partitioning of data
         currentBucketAllowableSize = (maxDataSize - len(result[containerSegment]["data"]))
         if currentBucketAllowableSize > 0:
