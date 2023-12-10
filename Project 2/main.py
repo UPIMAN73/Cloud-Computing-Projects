@@ -163,6 +163,7 @@ Output = {}
 shuffledStorage = {}
 
 # Stats Data
+webScrapingTimings = []
 mapTimings = []
 shuffleTiming = 0
 reduceTiming = 0
@@ -188,7 +189,10 @@ try:
         print("\t- URL: " + book[1])
 
         # REST API Request to parse and load data into proper order
+        initTime = now()
         data = getRawContent(book[1])
+        finalTime = now()
+        webScrapingTimings.append(finalTime - initTime) # Get web scraping timings
         resourceHeaders.append(book[0])
 
         # Map stage
@@ -226,5 +230,6 @@ finally:
         json.dump(Output, outputFile, indent=2)
     
     # Get output statistics on the algorithm run-times
+    webScrapingTimings.sort()
     with open("Algorithm-Stats.json", "w") as outputFile:
-        json.dump({"Units" : "s", "Map-Timings" : mapTimings, "Map" : sum(mapTimings)/len(mapTimings), "Shuffle" : shuffleTiming, "Reduce" : reduceTiming}, outputFile, indent=4)
+        json.dump({"Units" : "s", "Web-Scrape-Timings" : webScrapingTimings, "Web-Scrape" : sum(webScrapingTimings)/len(webScrapingTimings), "Web-Scrape-Time" : sum(webScrapingTimings[:(len(webScrapingTimings) - 1)])/len(webScrapingTimings[:(len(webScrapingTimings) - 1)]), "Map-Timings" : mapTimings, "Map" : sum(mapTimings)/len(mapTimings), "Shuffle" : shuffleTiming, "Reduce" : reduceTiming}, outputFile, indent=4)
