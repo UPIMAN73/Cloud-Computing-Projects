@@ -183,7 +183,7 @@ try:
         try:
             resourceYaml = yaml.safe_load(yamlFile)
         except yaml.YAMLError as exc:
-            print(exc)    
+            print(exc)
 
     # Loading book resources into a map reducable format
     for ind, book in enumerate(resourceYaml["Books"]):
@@ -224,15 +224,17 @@ finally:
     with open("Output-Storage-Container.json", "w") as outputFile:
         json.dump(storage, outputFile, indent=2)
 
-    # # Save storage container into a proper format
+    # Save storage container into a proper format
     with open("Output-Shuffle.json", "w") as outputFile:
         json.dump(shuffledStorage, outputFile, indent=2)
     
-    # # Map Reduced version of a word counter processed and dumped into a JSON file
+    # Map Reduced version of a word counter processed and dumped into a JSON file
     with open("Output-Word-Count.json", "w") as outputFile:
         json.dump(Output, outputFile, indent=2)
     
     # Get output statistics on the algorithm run-times
     webScrapingTimings.sort()
     with open("Algorithm-Stats.json", "w") as outputFile:
-        json.dump({"Units" : "s", "Web-Scrape-Timings" : webScrapingTimings, "Web-Scrape" : sum(webScrapingTimings)/len(webScrapingTimings), "Web-Scrape-Time" : sum(webScrapingTimings[:(len(webScrapingTimings) - 1)])/len(webScrapingTimings[:(len(webScrapingTimings) - 1)]), "Map-Timings" : mapTimings, "Map" : sum(mapTimings)/len(mapTimings), "Shuffle" : shuffleTiming, "Reduce" : reduceTiming}, outputFile, indent=4)
+        json.dump({ "Units" : "s", "Web-Scrape-Timings" : webScrapingTimings, "Web-Scrape-Time" : sum(webScrapingTimings[:(len(webScrapingTimings) - 1)])/len(webScrapingTimings[:(len(webScrapingTimings) - 1)]),
+                    "Web-Scrape" : sum(webScrapingTimings)/len(webScrapingTimings), "Map-Timings" : mapTimings, "Map" : sum(mapTimings)/len(mapTimings), 
+                    "Shuffle" : shuffleTiming, "Reduce" : reduceTiming }, outputFile, indent=4)
